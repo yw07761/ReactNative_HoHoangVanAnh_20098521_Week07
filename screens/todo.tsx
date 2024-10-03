@@ -15,7 +15,6 @@ export default function ToDo() {
   const route = useRoute();
   const [job, setJob] = useState('');
 
-  // Nhận job từ params nếu có
   useEffect(() => {
     if (route.params?.job) {
       setJob(route.params.job);
@@ -27,21 +26,19 @@ export default function ToDo() {
       Alert.alert('Please enter a job.');
     } else {
       if (route.params?.isEdit) {
-        // Nếu đang chỉnh sửa, gửi oldJob và newJob
         navigation.navigate('ToDoList', {
           editedJob: { oldJob: route.params.job, newJob: job },
         });
       } else {
-        // Nếu thêm mới, chỉ gửi job
         navigation.navigate('ToDoList', { job });
       }
-      setJob(''); // Đặt lại trường nhập
+      setJob('');
     }
   };
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      <View style={{ alignItems: 'flex-end'}}>
+      <View style={{ alignItems: 'flex-end' }}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <Icon name="arrow-back" size={25} color="gray" />
         </TouchableOpacity>
@@ -79,7 +76,7 @@ export default function ToDo() {
           textAlign: 'center',
           marginBottom: 20,
           fontFamily: 'Helvetica',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
         }}>
         ADD YOUR JOB
       </Text>
@@ -115,7 +112,7 @@ export default function ToDo() {
           padding: 10,
           borderRadius: 16,
           marginTop: 30,
-          marginHorizontal: 70
+          marginHorizontal: 70,
         }}
         onPress={handleFinish}>
         <Text style={{ color: 'white', fontSize: 14, marginRight: 10 }}>
