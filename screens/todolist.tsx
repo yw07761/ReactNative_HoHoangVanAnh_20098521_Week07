@@ -13,16 +13,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 export default function ToDoList() {
   const navigation = useNavigation();
   const route = useRoute();
-  const [jobs, setJobs] = useState([]); // Danh sách các công việc
-  const [searchTerm, setSearchTerm] = useState(''); // Từ khóa tìm kiếm
+  const [jobs, setJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Nhận công việc mới từ params và thêm vào danh sách
   useEffect(() => {
     if (route.params?.job) {
-      setJobs((prevJobs) => [...prevJobs, route.params.job]); // Thêm công việc mới vào danh sách
+      setJobs((prevJobs) => [...prevJobs, route.params.job]);
     }
     if (route.params?.editedJob) {
-      // Cập nhật công việc đã chỉnh sửa
       const { oldJob, newJob } = route.params.editedJob;
       setJobs((prevJobs) =>
         prevJobs.map((job) => (job === oldJob ? newJob : job))
@@ -30,7 +28,6 @@ export default function ToDoList() {
     }
   }, [route.params]);
 
-  // Hàm lọc danh sách công việc theo từ khóa tìm kiếm
   const filteredJobs = jobs.filter((job) =>
     job.toLowerCase().includes(searchTerm.toLowerCase())
   );
