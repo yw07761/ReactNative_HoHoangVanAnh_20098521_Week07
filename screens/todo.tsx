@@ -1,116 +1,133 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Sử dụng thư viện react-native-vector-icons
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function ToDo() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const [job, setJob] = useState('');
+
+  // Nhận job từ params nếu có
+  useEffect(() => {
+    if (route.params?.job) {
+      setJob(route.params.job);
+    }
+  }, [route.params?.job]);
+
+  const handleFinish = () => {
+    if (job.trim() === '') {
+      Alert.alert('Please enter a job.');
+    } else {
+      if (route.params?.isEdit) {
+        // Nếu đang chỉnh sửa, gửi oldJob và newJob
+        navigation.navigate('ToDoList', {
+          editedJob: { oldJob: route.params.job, newJob: job },
+        });
+      } else {
+        // Nếu thêm mới, chỉ gửi job
+        navigation.navigate('ToDoList', { job });
+      }
+      setJob(''); // Đặt lại trường nhập
+    }
+  };
 
   return (
-    <View>
-      <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 20 }}>
+      <View style={{ alignItems: 'flex-end'}}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <Icon name="arrow-back" size={25} color="gray" />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 40,
+        }}>
         <View
           style={{
-            alignItems: 'flex-end', // Đặt icon sát lề trái
-            marginRight: 20,
-            marginTop: 10,
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            backgroundColor: '#D9CBF6',
+            overflow: 'hidden',
+            marginRight: 10,
           }}>
-          <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-            <Icon name="arrow-back" size={25} color="gray" />
-          </TouchableOpacity>
+          <Image
+            source={require('../assets/Rectangle.png')}
+            style={{ width: '100%', height: '100%' }}
+          />
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: -20,
-            marginLeft: 30,
-            justifyContent: 'flex-start', // Đảm bảo nội dung bên phải vẫn giữ nguyên
-          }}>
-          <View
-            style={{
-              width: 50, // Chiều rộng hình tròn
-              height: 50, // Chiều cao hình tròn
-              borderRadius: 50, // Để tạo thành hình tròn
-              backgroundColor: '#D9CBF6', // Màu nền
-              overflow: 'hidden', // Cắt hình ảnh theo hình tròn
-              marginRight: 10, // Khoảng cách giữa hình và văn bản
-            }}>
-            <Image
-              source={require('../assets/Rectangle.png')}
-              style={{
-                width: 50,
-                height: 50,
-              }}
-            />
-          </View>
-          <View style={{ flexDirection: 'column' }}>
-            <Text style={{ fontWeight: 'bold' }}>Hi Twinkle</Text>
-            <Text>Have a great day ahead</Text>
-          </View>
+        <View>
+          <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Hi Twinkle</Text>
+          <Text>Have a great day ahead</Text>
         </View>
       </View>
 
-      <View
+      <Text
         style={{
-          flexDirection: 'row', // Để hiển thị text và icon theo chiều ngang
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: 40,
+          color: '#171A1F',
+          fontSize: 30,
+          textAlign: 'center',
+          marginBottom: 20,
+          fontFamily: 'Helvetica',
+          fontWeight: 'bold'
         }}>
-        <h1 style={{ color: '#171A1F', fontFamily: 'Helvetica' }}>
-          ADD YOUR JOB
-        </h1>
-      </View>
+        ADD YOUR JOB
+      </Text>
+
       <View
         style={{
-          flexDirection: 'row', // Căn TextInput và Image theo chiều ngang
-          alignItems: 'center', // Căn giữa theo trục dọc
+          flexDirection: 'row',
+          alignItems: 'center',
           borderWidth: 1,
           borderRadius: 5,
           borderColor: '#9095A0',
           paddingHorizontal: 15,
           paddingVertical: 10,
-          marginHorizontal: 20,
         }}>
         <Image
           source={require('../assets/input.png')}
-          style={{ width: 20, height: 20, marginRight: 10 }} // Đặt kích thước và khoảng cách của hình ảnh
+          style={{ width: 20, height: 20, marginRight: 10 }}
         />
         <TextInput
-          style={{ flex: 1 }} // Để chiếm toàn bộ chiều rộng còn lại
-          placeholder="input your job"
+          style={{ flex: 1 }}
+          placeholder="Input your job"
+          value={job}
+          onChangeText={setJob}
         />
       </View>
-      <View>
-        <TouchableOpacity
-          style={{
-            flexDirection: 'row', // Để hiển thị text và icon theo chiều ngang
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#00BDD6', // Màu nền của button
-            padding: 10,
-            borderRadius: 20,
-            marginHorizontal: 80,
-            marginTop: 50,
-          }}
-          onPress={() => navigation.navigate('ToDoList')}>
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 14,
-              marginRight: 10,
-              fontFamily: 'Helvetica',
-            }}>
-            FINISH
-          </Text>
-          <Icon name="arrow-forward" size={25} color="white" />
-        </TouchableOpacity>
-        <Image
-          source={require('../assets/Image1.png')}
-          style={{ width: 160, height: 160, marginTop: 40, marginLeft: 90 }}
-        />
-      </View>
+
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#00BDD6',
+          padding: 10,
+          borderRadius: 16,
+          marginTop: 30,
+          marginHorizontal: 70
+        }}
+        onPress={handleFinish}>
+        <Text style={{ color: 'white', fontSize: 14, marginRight: 10 }}>
+          FINISH
+        </Text>
+        <Icon name="arrow-forward" size={25} color="white" />
+      </TouchableOpacity>
+
+      <Image
+        source={require('../assets/Image1.png')}
+        style={{ width: 160, height: 160, marginTop: 40, alignSelf: 'center' }}
+      />
     </View>
   );
 }

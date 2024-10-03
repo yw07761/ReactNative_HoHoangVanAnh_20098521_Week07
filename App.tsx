@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
+      <Stack.Navigator initialRouteName="ToDo">
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="ToDoList" component={ToDoList} />
         <Stack.Screen name="ToDo" component={ToDo} />
