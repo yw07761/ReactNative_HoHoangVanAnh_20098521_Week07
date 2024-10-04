@@ -1,5 +1,5 @@
 # ReactNative_HoHoangVanAnh_20098521_Week07
-ReactNative_HoHoangVanAnh_20098521_Week07
+Use mockapi - flatlist display - add + edit + delete item no need to render
 
 # ToDo List App
 
