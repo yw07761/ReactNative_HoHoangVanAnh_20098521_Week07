@@ -14,6 +14,7 @@ export default function ToDo() {
   const navigation = useNavigation();
   const route = useRoute();
   const [job, setJob] = useState('');
+  const name = route.params?.name || 'User';
 
   useEffect(() => {
     if (route.params?.job) {
@@ -21,25 +22,52 @@ export default function ToDo() {
     }
   }, [route.params?.job]);
 
-  const handleFinish = () => {
+
+  const handleFinish = async () => {
     if (job.trim() === '') {
       Alert.alert('Please enter a job.');
-    } else {
-      if (route.params?.isEdit) {
-        navigation.navigate('ToDoList', {
-          editedJob: { oldJob: route.params.job, newJob: job },
+      return;
+    }
+
+    const jobData = {title:job};
+
+    try{
+      if(route.params?.isEdit){
+        const response = await fetch(`https://66ff36ab2b9aac9c997e88f6.mockapi.io/todo/v1/job/${route.params.job.id}`,{
+          method: 'PUT',
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jobData),
         });
-      } else {
-        navigation.navigate('ToDoList', { job });
+        if(response.ok){
+          navigation.navigate('ToDoList');
+        }else{
+          Alert.alert('Error updating job', 'Failed to update job');
+        }
+      }else {
+        const response = await fetch('https://66ff36ab2b9aac9c997e88f6.mockapi.io/todo/v1/job',{
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jobData),
+        });
+        if(response.ok){
+          navigation.navigate('ToDoList');
+        }else {
+          Alert.alert('Error adding job', 'Failed to add job' );
+        }
       }
-      setJob('');
+    }catch (error){
+      console.error(error);
     }
   };
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
       <View style={{ alignItems: 'flex-end' }}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('ToDoList')}>
           <Icon name="arrow-back" size={25} color="gray" />
         </TouchableOpacity>
       </View>
@@ -64,7 +92,7 @@ export default function ToDo() {
           />
         </View>
         <View>
-          <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Hi Twinkle</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Hi {name}</Text>
           <Text>Have a great day ahead</Text>
         </View>
       </View>
