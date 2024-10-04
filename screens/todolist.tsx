@@ -13,29 +13,45 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 export default function ToDoList() {
   const navigation = useNavigation();
   const route = useRoute();
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs]=useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const name = route.params?.name || 'User';
 
-  useEffect(() => {
-    if (route.params?.job) {
-      setJobs((prevJobs) => [...prevJobs, route.params.job]);
+  useEffect(()=>{
+    fetchJobs();
+  }, []);
+  
+  const fetchJobs = async () => {
+    try{
+        const response = await fetch('https://66ff36ab2b9aac9c997e88f6.mockapi.io/todo/v1/job');
+        const data = await response.json();
+        setJobs(data);
+    }catch (error) {
+      console.log('Error fetching jobs:', error);
     }
-    if (route.params?.editedJob) {
-      const { oldJob, newJob } = route.params.editedJob;
-      setJobs((prevJobs) =>
-        prevJobs.map((job) => (job === oldJob ? newJob : job))
-      );
+  };
+  
+
+  const deleteJob = async (id) =>{
+    try{
+      const response = await fetch(`https://66ff36ab2b9aac9c997e88f6.mockapi.io/todo/v1/job/${id}`,{
+        method: 'DELETE',
+      });
+      if(response.ok){
+        fetchJobs();
+      }
+    }catch (error){
+      console.log('Error deleting job', error);
     }
-  }, [route.params]);
+  };
 
-  const filteredJobs = jobs.filter((job) =>
-    job.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobs.filter((job) => job.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  
   return (
     <View style={{ flex: 1 }}>
       <View style={{ alignItems: 'flex-start', marginLeft: 10, marginTop: 10 }}>
-        <TouchableOpacity onPress={() => navigation.navigate('ToDo')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={25} color="gray" />
         </TouchableOpacity>
       </View>
@@ -62,7 +78,7 @@ export default function ToDoList() {
           />
         </View>
         <View style={{ flexDirection: 'column' }}>
-          <Text style={{ fontWeight: 'bold' }}>Hi Twinkle</Text>
+          <Text style={{ fontWeight: 'bold' }}>Hi {name}</Text>
           <Text>Have a great day ahead</Text>
         </View>
       </View>
@@ -82,9 +98,8 @@ export default function ToDoList() {
           source={require('../assets/Search.png')}
           style={{ width: 20, height: 20, marginRight: 10 }}
         />
-        <TextInput
-          style={{ flex: 1 }}
-          placeholder="Search"
+        <TextInput style={{flex: 1 }}
+          placeholder = "Search"
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
@@ -92,31 +107,33 @@ export default function ToDoList() {
 
       <FlatList
         data={filteredJobs}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: '#D0D3D4',
-              padding: 10,
-              borderRadius: 10,
-              marginVertical: 5,
-              marginHorizontal: 20,
-            }}>
+        keyExtractor={(item) => item.id.toString()}
+        renderItem = {({item}) => (
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#D0D3D4',
+            padding: 10,
+            borderRadius: 10,
+            marginVertical: 5,
+            marginHorizontal: 20
+          }}>
+            <Image source ={require('../assets/check.png')}/>
+            <Text style={{ flex: 1, textAlign: 'center'}}>{item.name}</Text>
+            <View style={{ flexDirection: 'row'}}>
+              <TouchableOpacity onPress={()=> navigation.navigate('ToDo',{job:item,isEdit: true})}>
+              <Image source={require('../assets/edit.png')}/>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={()=> deleteJob(item.id)}>
             <Image source={require('../assets/check.png')} />
-            <Text style={{ flex: 1, textAlign: 'center' }}>{item}</Text>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('ToDo', { job: item, isEdit: true })
-              }>
-              <Image source={require('../assets/edit.png')} />
             </TouchableOpacity>
           </View>
         )}
-        style={{ marginTop: 20 }}
+        style={{marginTop: 20}}
       />
+
       <View style={{ alignItems: 'center', marginTop: 20 }}>
         <TouchableOpacity
           style={{
@@ -128,7 +145,7 @@ export default function ToDoList() {
             justifyContent: 'center',
             marginBottom: 50,
           }}
-          onPress={() => navigation.navigate('ToDo')}>
+          onPress={() => navigation.navigate('ToDo',{name})}>
           <Icon name="add" size={30} color="white" />
         </TouchableOpacity>
       </View>
