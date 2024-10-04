@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Sử dụng thư viện react-native-vector-icons
 import { useNavigation } from '@react-navigation/native';
 
 export default function App() {
     const navigation = useNavigation();
+    const [name, setName]= useState('');
 
   return (
     <View>
@@ -28,8 +29,10 @@ export default function App() {
           style={{ width: 20, height: 20, marginRight: 10 }} // Đặt kích thước và khoảng cách của hình ảnh
         />
         <TextInput
-          style={{ flex: 1, paddingHorizontal: 15 }} // Để chiếm toàn bộ chiều rộng còn lại
+          style={{ flex: 1, paddingHorizontal: 15 }}
           placeholder="Enter your name"
+          value = {name}
+          onChangeText={setName}
         />
       </View>
 
@@ -45,7 +48,7 @@ export default function App() {
             marginHorizontal: 80,
             marginTop: 50,
           }}
-          onPress={() => navigation.navigate('ToDo')} >
+          onPress={() => navigation.navigate('ToDoList', {name})} >
           <Text
             style={{
               color: 'white',
